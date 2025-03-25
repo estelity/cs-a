@@ -18,6 +18,8 @@ public class Game2048 {
     private JLabel scoreLabel;
     private JLabel highScoreLabel;
     private boolean winConditionReached;
+    private boolean moved;
+
     public Game2048() {
         // Constructor code
         
@@ -69,7 +71,6 @@ public class Game2048 {
                     moveRight();
                 }
                 updateGridLabels();
-                updateScore();
                 if (isGameOver()) {
                     showGameOverMessage();
                 }
@@ -113,8 +114,11 @@ public class Game2048 {
         }
         while(grid[randomRow][randomColumn] != 0);
         grid[randomRow][randomColumn] = twoFour;
+        score += twoFour;
 
         twoFour = (int)(Math.random()*10);
+
+        updateScore();
     }
     public void updateGridLabels() {
         // Update the GUI grid labels with the current grid state
@@ -168,7 +172,7 @@ public class Game2048 {
     public void moveUp() {
         //Moves and merges the tiles upwards
 
-        boolean moved = false;
+        moved = false;
 
         // move all tiles up
 
@@ -237,7 +241,7 @@ public class Game2048 {
     public void moveDown() {
         //Moves and merges the tiles upwards
 
-        boolean moved = false;
+        moved = false;
 
         // move all tiles up
 
@@ -305,7 +309,7 @@ public class Game2048 {
     public void moveLeft() {
         //Moves and merges the tiles upwards
 
-        boolean moved = false;
+        moved = false;
 
         // move all tiles up
 
@@ -374,7 +378,7 @@ public class Game2048 {
     public void moveRight() {
         //Moves and merges the tiles upwards
 
-        boolean moved = false;
+        moved = false;
 
         // move all tiles up
 
@@ -451,31 +455,80 @@ public class Game2048 {
     }
     public boolean isGameOver() {
         //Game-over condition
+        boolean over = true;
 
-        return false;
+        for (int col = 0; col < 4; col++){
+            for (int row = 0; row < 4; row++){
+                if (grid[row][col] == 0){
+                    over = false;
+                }
+                if (grid[row][col] == 2048){
+                    winConditionReached = true;
+                    return true;
+                }
+            }
+        }
+
+        if (over){
+            return !findAdjacent();
+        }
+
+        return over;
     }
     public void showGameOverMessage() {
         //Displays game-over message
         String message;
         if (winConditionReached) {
-            message = "Congratulations! You reached the 2048 tile!\nDo you want to continue playing?";
+            message = "Congratulations! You reached the 2048 tile!\nDo you want to play again?";
         } else {
             message = "Game over! Do you want to play again?";
         }
         int choice = JOptionPane.showConfirmDialog(frame, message, "Game Over", JOptionPane.YES_NO_OPTION);
         if (choice == JOptionPane.YES_OPTION) {
             restartGame();
+            initializeGrid();
+            updateGridLabels();
         } else {
             System.exit(0);
         }
     }
     public void restartGame() {
         //Restarts the game
-
+        for(int row = 0; row < 4; row++){
+            for (int col = 0; col < 4; col++){
+                grid[row][col] = 0;
+            }
+        }
+        score = 0;
     }
     public void updateScore() {
         //Updates the score
+        if (moved = true){
+            if (score > highScore){
+                highScore = score;
+                highScoreLabel.setText("Highscore: " + Integer.toString(highScore));
+            }
 
+            scoreLabel.setText("Score: " + Integer.toString(score));
+        }
+    }
+    public boolean findAdjacent(){
+        for (int row = 0; row < 4; row++){
+            for (int col = 0; col < 3; col++){
+                if (grid[row][col] == grid[row][col + 1]){
+                    return true;
+                }
+            }
+        }
+
+        for (int col = 0; col < 4; col++){
+            for (int row = 0; row < 3; row++){
+                if (grid[row + 1][col] == grid[row][col]){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
     public static void main(String[] args) {
         //Main method
