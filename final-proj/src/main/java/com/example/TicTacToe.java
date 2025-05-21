@@ -4,10 +4,15 @@ public class TicTacToe {
     
     private static String turn;
     private String[][] board;
+    private static boolean madeLegalMove = false;
 
     public TicTacToe(){
 
-        board = new String[3][3];
+        board = new String[][] {
+                {"", "", ""},
+                {"", "", ""},
+                {"", "", ""}
+            };
 
         // System.out.println("  0 1 2");
         // for (int row = 0; row < 3; row++){
@@ -26,13 +31,17 @@ public class TicTacToe {
     }
 
     public static void swapTurn(){
-        if (turn.equals("X")){
-            turn = "O";
-        }
-        else{
-            turn = "X";
+        if (madeLegalMove){
+            madeLegalMove = false;
+            if (turn.equals("X")){
+                turn = "O";
+            }
+            else{
+                turn = "X";
+            }
         }
     }
+
 
     public String getSpot(int row, int col){
         return board[row][col];
@@ -54,25 +63,23 @@ public class TicTacToe {
         return fullBoard;
     }
 
-    public boolean pickLocation(int row, int col){
-        if (row > 2 || col > 2){
-            return false;
+    public void pickLocation(int row, int col){
+        if (board[row][col].equals("")){
+            board[row][col] = turn;
+            madeLegalMove = true;
         }
-        if (board[row][col].equals("X") || board[row][col].equals("O")){
-            return false;
-        }
-        return true;
     }
 
     public void takeTurn(int row, int col){
-
-        board[row][col] = turn;                                                                                                                        
-
-        if (turn.equals("X")){
-            turn = "O";
-        }
-        else{
-            turn = "X";
+        if (board[row][col].equals("")){
+            board[row][col] = turn;                                                                                                                        
+            madeLegalMove = true;
+            if (turn.equals("X")){
+                turn = "O";
+            }
+            else{
+                turn = "X";
+            }
         }
     }
 
@@ -121,6 +128,17 @@ public class TicTacToe {
         }
 
         return false;
+    }
+
+    public boolean hasEmpty(){
+        for (int row = 0; row < 3; row++){
+            for (int col = 0; col < 3; col++){
+                if (!(board[row][col].equals(""))){
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }
 
